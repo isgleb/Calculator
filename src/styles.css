@@ -1,0 +1,40 @@
+.window { -fx-background-color: #595857;}
+
+.buttons {
+	-fx-text-fill: white;
+	-fx-font-size: 20;
+	-fx-background-radius: 0;
+	-fx-spacing:0.333333em;
+}
+
+.buttons:focused {
+    -fx-inner-border: -fx-body-color;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+}
+
+.orangeButtons {-fx-background-color: #fd9e2b;}
+.orangeButtons:pressed { -fx-background-color: #c97d20;}
+.lightGreyB{ -fx-background-color:#818080;}
+.lightGreyB:pressed { -fx-background-color:#b5b5b5;}
+.darkGreyB{	-fx-background-color:#686766;}
+.darkGreyB:pressed {-fx-background-color: #818080;}
+
+#line {
+	-fx-text-fill: white;
+	-fx-font-size: 18;
+}
+
+
+.choice-box {
+  -fx-background-color: #686766;
+  -fx-mark-color: #fd9e2b;
+}
+
+
+.choice-box > .label { -fx-text-fill: white; }
+
+.choice-box .context-menu { -fx-background-color: #818080;}
+
+.choice-box .menu-item:focused { -fx-background-color: orange; }
+
+.choice-box .menu-item > .label { -fx-text-fill: white; }
