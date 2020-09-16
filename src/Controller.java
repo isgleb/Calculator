@@ -13,66 +13,25 @@ import org.jsoup.select.Elements;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    HashMap<String, String> ratesValues = new HashMap<String, String>();
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ObservableList currencies = FXCollections.observableArrayList();
-        currencies.add("RUB");
-        currencies.add("EUR");
-        currencies.add("USD");
 
-        currentCurrency.getItems().addAll(currencies);
-        aimCurrency.getItems().addAll(currencies);
+        currentCurrency.getItems().addAll("RUB", "EUR", "USD");
+        aimCurrency.getItems().addAll("RUB", "EUR", "USD");
         rate.setText("-");
 
         currentCurrency.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                rate.setText(ratesValues.get(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
+                rate.setText(RatesHandler.getRatesValues().get(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
 
         aimCurrency.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                rate.setText(ratesValues.get(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
+                rate.setText(RatesHandler.getRatesValues().get(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
     }
 
-    private String rateParser(String url) throws Exception {
-        Document document = Jsoup.connect(url).get();
-        Elements value = document.getElementsByClass("news-stock-table__row_today");
-        String text = value.text().split(" ")[1]; // ошибка здесь
-        String resultRate = text.replace(",", ".");
-        return resultRate;
-    }
-
-    public void refreshRates(ActionEvent actionEvent) {
-
-        try {
-            String usdEur = rateParser("https://yandex.ru/news/quotes/30.html");
-            ratesValues.put("EUR_USD", "* " + usdEur);
-            ratesValues.put("USD_EUR", "/ " + usdEur);
-
-            String rubUsd = rateParser("https://yandex.ru/news/quotes/2002.html");
-            ratesValues.put("USD_RUB", "* " + rubUsd);
-            ratesValues.put("RUB_USD", "/ " + rubUsd);
-
-            String rubEur = rateParser("https://yandex.ru/news/quotes/2000.html");
-            ratesValues.put("EUR_RUB", "* " + rubEur);
-            ratesValues.put("RUB_EUR", "/ " + rubEur);
-
-            ratesValues.put("RUB_RUB", "* 1");
-            ratesValues.put("USD_USD", "* 1");
-            ratesValues.put("EUR_EUR", "* 1");
-
-
-            if (currentCurrency.getValue() != null && currentCurrency.getValue() != null) {
-                rate.setText(ratesValues.get(currentCurrency.getValue() + "_" + aimCurrency.getValue()));
-            }
-        } catch (Exception e) {
-            rate.setText("connection problem");
-            e.printStackTrace();
-        }
-    }
 
     public void writeNumber(ActionEvent actionEvent) {
 
@@ -101,8 +60,9 @@ public class Controller implements Initializable {
         else if (delete.equals(pushedButton)) ExpressionFormatter.deleteLast();
         else if (AC.equals(pushedButton)) ExpressionFormatter.clear();
         else if (brackets.equals(pushedButton)) ExpressionFormatter.addBrackets();
-        else if (convert.equals(pushedButton)) ExpressionFormatter.addRate(ratesValues.get(currentCurrency.getValue() + "_" + aimCurrency.getValue()));
         else if (equals.equals(pushedButton)) Evaluator.getResult();
+        else if (refresh.equals(pushedButton)) RatesHandler.refreshRates();
+        else if (convert.equals(pushedButton)) ExpressionFormatter.addRate(RatesHandler.getRatesValues().get(currentCurrency.getValue() + "_" + aimCurrency.getValue()));
 
         line.setText(ExpressionFormatter.outputLine);
     }
