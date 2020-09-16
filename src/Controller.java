@@ -1,5 +1,3 @@
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -7,16 +5,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -26,10 +19,10 @@ public class Controller implements Initializable {
         rate.setText("-");
 
         currentCurrency.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                rate.setText(RatesHandler.getRatesValues().get(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
+                rate.setText(RatesHandler.getRateValue(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
 
         aimCurrency.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                rate.setText(RatesHandler.getRatesValues().get(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
+                rate.setText(RatesHandler.getRateValue(currentCurrency.getValue() + "_" + aimCurrency.getValue())));
     }
 
 
@@ -48,8 +41,9 @@ public class Controller implements Initializable {
         else if (zero.equals(pushedButton)) ExpressionFormatter.addNumber("0");
         else if (comma.equals(pushedButton)) ExpressionFormatter.addComma();
 
-        line.setText(ExpressionFormatter.outputLine);
+        line.setText(ExpressionFormatter.getOutputLine());
     }
+
 
     public void doOperation(ActionEvent actionEvent) {
         Button pushedButton = (Button) actionEvent.getSource();
@@ -60,12 +54,24 @@ public class Controller implements Initializable {
         else if (delete.equals(pushedButton)) ExpressionFormatter.deleteLast();
         else if (AC.equals(pushedButton)) ExpressionFormatter.clear();
         else if (brackets.equals(pushedButton)) ExpressionFormatter.addBrackets();
-        else if (equals.equals(pushedButton)) Evaluator.getResult();
-        else if (refresh.equals(pushedButton)) RatesHandler.refreshRates();
-        else if (convert.equals(pushedButton)) ExpressionFormatter.addRate(RatesHandler.getRatesValues().get(currentCurrency.getValue() + "_" + aimCurrency.getValue()));
-
-        line.setText(ExpressionFormatter.outputLine);
+        else if (equals.equals(pushedButton)) Evaluator.evaluateResult();
+        else if (convert.equals(pushedButton)) {
+            ExpressionFormatter.addRate(RatesHandler.getRateValue(currentCurrency.getValue() + "_" + aimCurrency.getValue()));
+        }
+        else if (refresh.equals(pushedButton)) {
+            try {
+                RatesHandler.refreshRates();
+                if (currentCurrency.getValue() != null && currentCurrency.getValue() != null) {
+                    rate.setText(RatesHandler.getRateValue(currentCurrency.getValue() + "_" + aimCurrency.getValue()));
+                }
+            } catch (Exception e) {
+                rate.setText("no data");
+                // e.printStackTrace();
+            }
+        }
+        line.setText(ExpressionFormatter.getOutputLine());
     }
+
 
     @FXML
     void keyBoardHandler(KeyEvent event) {
@@ -74,7 +80,7 @@ public class Controller implements Initializable {
         if (event.getCode().toString().equals("BACK_SPACE")) {
             ExpressionFormatter.deleteLast();
         } else if (event.getCode().toString().equals("ENTER")) {
-            Evaluator.getResult();
+            Evaluator.evaluateResult();
         }
 
         switch (key) {
@@ -92,13 +98,13 @@ public class Controller implements Initializable {
             case "," : ExpressionFormatter.addComma(); break;
             case "-" : ExpressionFormatter.addOperator("-"); break;
             case "+" : ExpressionFormatter.addOperator("+"); break;
-            case "=" : Evaluator.getResult(); break;
+            case "=" : Evaluator.evaluateResult(); break;
             case "/" : ExpressionFormatter.addOperator("/"); break;
             case "*" : ExpressionFormatter.addOperator("*"); break;
             case "(" :
             case ")" : ExpressionFormatter.addBrackets(); break;
         }
-        line.setText(ExpressionFormatter.outputLine);
+        line.setText(ExpressionFormatter.getOutputLine());
     }
 
     @FXML

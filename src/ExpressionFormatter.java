@@ -3,9 +3,13 @@ import java.util.ArrayList;
 public class ExpressionFormatter {
 
     private static ArrayList<String> expression = new ArrayList<>();
-    static String outputLine = "";
+    private static String outputLine = "";
     private static String[] numbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     private static String[] operators = {"+", "-", "*", "/"};
+
+    public static String getOutputLine() {
+        return outputLine;
+    }
 
 
     private static boolean isNumber(String string) {
@@ -15,12 +19,14 @@ public class ExpressionFormatter {
         return false;
     }
 
+
     private static boolean isOperator(String string) {
         for (String operator: operators) {
             if (operator.equals(string.substring(string.length()-1)))return true;
         }
         return false;
     }
+
 
     private static byte countOperators (String operator) {
         byte count = 0;
@@ -30,6 +36,7 @@ public class ExpressionFormatter {
         return count;
     }
 
+
     private static void refreshSequence() {
         outputLine = "";
         for (String element: expression) {
@@ -37,14 +44,17 @@ public class ExpressionFormatter {
         }
     }
 
+
     public static ArrayList<String> getExpression() {
         return expression;
     }
+
 
     public static void setExpression(ArrayList<String> expression) {
         ExpressionFormatter.expression = expression;
         refreshSequence();
     }
+
 
     static void addNumber(String number) {
 
@@ -71,6 +81,7 @@ public class ExpressionFormatter {
         refreshSequence();
     }
 
+
     static void addComma() {
         int lastElement = expression.size()-1;
         if (!expression.get(lastElement).contains(",") && isNumber(expression.get(lastElement))) {
@@ -78,6 +89,7 @@ public class ExpressionFormatter {
             refreshSequence();
         }
     }
+
 
     static void addOperator(String operator) {
 
@@ -95,6 +107,7 @@ public class ExpressionFormatter {
             refreshSequence();
         }
     }
+
 
     static void addBrackets() {
         int lastElement = expression.size()-1;
@@ -122,6 +135,7 @@ public class ExpressionFormatter {
         }
     }
 
+
     public static void deleteLast() {
         int lastElement = expression.size()-1;
         if (isNumber(expression.get(lastElement)) && expression.get(lastElement).length()>1) {
@@ -130,18 +144,24 @@ public class ExpressionFormatter {
         refreshSequence();
     }
 
+
     public static void clear(){
         ExpressionFormatter.expression.clear();
         ExpressionFormatter.outputLine = "";
     }
 
+
     public static void addRate(String rate) {
         if (rate != null) {
+            if (expression.isEmpty() || isOperator(expression.get(expression.size()-1))) {
+                expression.add("1");
+            }
             expression.add(rate.substring(0,1));
             expression.add(rate.substring(2));
         }
         refreshSequence();
     }
+
 
     public static void checkExpression() {
         while (countOperators("(") > countOperators(")")){

@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Evaluator {
 
-    static void getResult() {
+    static void evaluateResult() {
         ExpressionFormatter.checkExpression();
         ArrayList<String> generalExpression = ExpressionFormatter.getExpression();
 
@@ -44,6 +44,7 @@ public class Evaluator {
         }
         return brackets;
     }
+
 
     private static String calculate(List<String> expression) {
 
